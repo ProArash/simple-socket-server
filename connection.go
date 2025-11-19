@@ -10,6 +10,8 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	fmt.Printf("Client connected: %s\n", conn.RemoteAddr().String())
+	welcomeMsg := fmt.Sprintf("Welcome %s\n", conn.RemoteAddr().String())
+	conn.Write([]byte(welcomeMsg))
 	reader := bufio.NewReader(conn)
 	for {
 		message, err := reader.ReadString('\n')
@@ -19,7 +21,8 @@ func handleConnection(conn net.Conn) {
 		}
 		trimmedMessage := message[:len(message)-1]
 		fmt.Printf("%s From %s\n", trimmedMessage, conn.RemoteAddr().String())
-		conn.Write([]byte(message))
+		msg := fmt.Sprintf("[%s]: %s", conn.RemoteAddr().String(), message)
+		conn.Write([]byte(msg))
 		if trimmedMessage == "STOP" {
 			fmt.Printf("Closed connection by: %s\n", conn.RemoteAddr().String())
 			break
